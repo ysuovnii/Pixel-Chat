@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up — Pixel Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: #A8B8C8;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            image-rendering: pixelated;
+        }
+
+        .auth-frame {
+            background: #E8EEF4;
+            border: 6px solid #1D2A42;
+            box-shadow:
+                inset 3px 3px 0 #F4F8FC,
+                inset -3px -3px 0 #B0BEC5,
+                8px 8px 0 rgba(0, 0, 0, 0.2);
+            width: 380px;
+        }
+
+        .auth-header {
+            background: #2C4263;
+            padding: 16px 20px;
+            text-align: center;
+            border-bottom: 3px solid #1D2A42;
+        }
+
+        .auth-header .icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .auth-header h1 {
+            font-size: 14px;
+            color: #fff;
+            text-shadow: 2px 2px 0 #111;
+            letter-spacing: 2px;
+        }
+
+        .auth-header p {
+            font-size: 8px;
+            color: #8AB8D8;
+            margin-top: 6px;
+        }
+
+        .auth-body {
+            padding: 24px 20px;
+        }
+
+        .error-msg {
+            background: #F8D0D0;
+            border: 2px solid #CC5555;
+            color: #882222;
+            font-size: 8px;
+            padding: 8px 10px;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 8px;
+            color: #5A6A7A;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 9px 10px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #1D2A42;
+            background: #F0F4F8;
+            border: 3px solid;
+            border-color: #8A9AAA #C8D0D8 #C8D0D8 #8A9AAA;
+            outline: none;
+        }
+
+        .form-group input::placeholder {
+            color: #8A9AAA;
+        }
+
+        .form-group input:focus {
+            border-color: #4A7AAA #A0B0C0 #A0B0C0 #4A7AAA;
+            background: #fff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #1D2A42;
+            background: linear-gradient(180deg, #A8E6A8 0%, #7ACC7A 100%);
+            border: 3px solid;
+            border-color: #C8F0C8 #4A8A4A #4A8A4A #C8F0C8;
+            cursor: pointer;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+            margin-top: 4px;
+        }
+
+        .submit-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .submit-btn:active {
+            filter: brightness(0.9);
+            border-color: #4A8A4A #C8F0C8 #C8F0C8 #4A8A4A;
+        }
+
+        .auth-footer {
+            padding: 12px 20px;
+            background: #D6DEE6;
+            border-top: 2px solid #B8C0C8;
+            text-align: center;
+            font-size: 8px;
+            color: #5A6A7A;
+        }
+
+        .auth-footer a {
+            color: #2C4263;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-frame">
+        <div class="auth-header">
+            <div class="icon">🕹️</div>
+            <h1>PIXEL CHAT</h1>
+            <p>Create your account</p>
+        </div>
+
+        <div class="auth-body">
+            <% if (message) { %>
+                <div class="error-msg">
+                    <%= message %>
+                </div>
+                <% } %>
+
+                    <form action="/signup" method="POST">
+                        <div class="form-group">
+                            <label>USERNAME</label>
+                            <input type="text" name="username" placeholder="Choose a name..." required />
+                        </div>
+                        <div class="form-group">
+                            <label>EMAIL</label>
+                            <input type="email" name="email" placeholder="Enter email..." required />
+                        </div>
+                        <div class="form-group">
+                            <label>PASSWORD</label>
+                            <input type="password" name="password" placeholder="Min 6 characters..." required />
+                        </div>
+                        <button type="submit" class="submit-btn">▶ CREATE ACCOUNT</button>
+                    </form>
+        </div>
+
+        <div class="auth-footer">
+            Already a player? <a href="/login">JOIN SERVER</a>
+        </div>
+    </div>
+</body>
+
+</html>
