@@ -1,0 +1,36 @@
+<% const currentPage = typeof activePage !== 'undefined' ? activePage : ''; %>
+
+<div class="command-menu float-1">
+  <div class="command-menu__title">COMMAND MENU</div>
+
+  <div class="command-menu__player">
+    <span class="pixel-icon">👤</span>
+    <span>
+      <span class="command-menu__player-name">
+        <%= (typeof user !== 'undefined' && user && user.username) ? user.username : 'Guest' %>
+      </span>
+    </span>
+  </div>
+
+  <ul class="command-menu__list">
+    <li class="command-menu__item <%= currentPage === 'home' ? 'is-active' : '' %>">
+      <a href="/home">
+        <span class="pixel-icon">⌂</span>
+        <span>HOME</span>
+      </a>
+    </li>
+    <li class="command-menu__item <%= currentPage === 'chat' ? 'is-active' : '' %>">
+      <a href="/home">
+        <span class="pixel-icon">💬</span>
+        <span>CHAT</span>
+      </a>
+    </li>
+    <li class="command-menu__item <%= currentPage === 'profile' ? 'is-active' : '' %>">
+      <a href="/profile">
+        <span class="pixel-icon">⚙</span>
+        <span>PROFILE</span>
+      </a>
+    </li>
+  </ul>
+</div>
+

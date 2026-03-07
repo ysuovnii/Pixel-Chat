@@ -6,238 +6,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile — Pixel Chat</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Press Start 2P', monospace;
-            background: #A8B8C8;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            image-rendering: pixelated;
-        }
-
-        .profile-frame {
-            background: #E8EEF4;
-            border: 6px solid #1D2A42;
-            box-shadow:
-                inset 3px 3px 0 #F4F8FC,
-                inset -3px -3px 0 #B0BEC5,
-                8px 8px 0 rgba(0, 0, 0, 0.2);
-            width: 400px;
-        }
-
-        .profile-header {
-            background: #2C4263;
-            padding: 16px 20px;
-            text-align: center;
-            border-bottom: 3px solid #1D2A42;
-        }
-
-        .profile-header h1 {
-            font-size: 12px;
-            color: #fff;
-            text-shadow: 2px 2px 0 #111;
-            letter-spacing: 1.5px;
-        }
-
-        .profile-header p {
-            font-size: 7px;
-            color: #8AB8D8;
-            margin-top: 5px;
-        }
-
-        .profile-body {
-            padding: 24px 20px;
-            text-align: center;
-        }
-
-        .avatar-area {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 16px;
-            cursor: pointer;
-        }
-
-        .avatar-area img {
-            width: 80px;
-            height: 80px;
-            border: 3px solid #1D2A42;
-            object-fit: cover;
-            image-rendering: pixelated;
-            transition: opacity 0.15s;
-        }
-
-        .avatar-area:hover img {
-            opacity: 0.5;
-        }
-
-        .avatar-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.4);
-            opacity: 0;
-            transition: opacity 0.15s;
-            font-size: 8px;
-            color: #fff;
-        }
-
-        .avatar-area:hover .avatar-overlay {
-            opacity: 1;
-        }
-
-        .info-group {
-            text-align: left;
-            margin-bottom: 10px;
-        }
-
-        .info-group label {
-            display: block;
-            font-size: 7px;
-            color: #5A6A7A;
-            margin-bottom: 4px;
-        }
-
-        .info-value {
-            background: #F0F4F8;
-            border: 3px solid;
-            border-color: #8A9AAA #C8D0D8 #C8D0D8 #8A9AAA;
-            padding: 8px 10px;
-            font-size: 9px;
-            color: #1D2A42;
-            font-family: 'Press Start 2P', monospace;
-        }
-
-        .upload-btn {
-            width: 100%;
-            padding: 9px;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 9px;
-            color: #1D2A42;
-            background: linear-gradient(180deg, #A8E6A8 0%, #7ACC7A 100%);
-            border: 3px solid;
-            border-color: #C8F0C8 #4A8A4A #4A8A4A #C8F0C8;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .upload-btn:hover {
-            filter: brightness(1.1);
-        }
-
-        .upload-btn:active {
-            filter: brightness(0.9);
-        }
-
-        .upload-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            filter: none;
-        }
-
-        .status-msg {
-            margin-top: 10px;
-            padding: 7px;
-            font-size: 8px;
-            display: none;
-        }
-
-        .status-msg.success {
-            display: block;
-            background: #C6EFCE;
-            border: 2px solid #55AA55;
-            color: #2A6A2A;
-        }
-
-        .status-msg.error {
-            display: block;
-            background: #F8D0D0;
-            border: 2px solid #CC5555;
-            color: #882222;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 14px;
-            font-size: 8px;
-            color: #2C4263;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/style.css" />
 </head>
 
-<body>
-    <div class="profile-frame">
-        <div class="profile-header">
-            <h1>⚙ PROFILE SETTINGS</h1>
-            <p>Update your avatar</p>
-        </div>
+<body class="theme-anti-gravity page--profile">
+    <%- include('layout', { user: user, activePage: 'profile' }) %>
 
-        <div class="profile-body">
-            <div class="avatar-area" onclick="document.getElementById('fileInput').click()">
-                <img id="avatarPreview"
-                    src="<%= user.profilePic || 'https://ui-avatars.com/api/?name=' + user.username + '&background=5A7A9A&color=fff&size=80&bold=true' %>"
-                    alt="" />
-                <div class="avatar-overlay">📷 CHANGE</div>
-            </div>
-
-            <input type="file" id="fileInput" accept="image/*" style="display:none" />
-
-            <div class="info-group">
-                <label>USERNAME</label>
-                <div class="info-value">
-                    <%= user.username %>
+    <main class="page-shell">
+        <section class="sheet float-2">
+            <header class="sheet__header">
+                <div>
+                    <h1 class="sheet__title">CHARACTER SHEET</h1>
+                    <p class="sheet__subtitle">
+                        Tune your avatar and review stats.
+                    </p>
                 </div>
-            </div>
-
-            <div class="info-group">
-                <label>EMAIL</label>
-                <div class="info-value">
-                    <%= user.email %>
+                <div class="sheet__subtitle">
+                    ID:
+                    <span style="color: var(--color-accent-cyan);">
+                        <%= user.username %>
+                    </span>
                 </div>
-            </div>
+            </header>
 
-            <button class="upload-btn" id="uploadBtn" disabled onclick="uploadProfilePic()">▶ UPLOAD AVATAR</button>
+            <section class="sheet__body">
+                <!-- Avatar & primary info -->
+                <article class="sheet-avatar">
+                    <div class="sheet-avatar__frame" onclick="document.getElementById('fileInput').click()">
+                        <img id="avatarPreview"
+                            src="<%= user.profilePic || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username) + '&background=5A7A9A&color=fff&size=96&bold=true' %>"
+                            alt="" />
+                    </div>
+                    <p class="sheet-avatar__hint">Click portrait to change avatar.</p>
 
-            <div class="status-msg" id="statusMsg"></div>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;" />
 
-            <a href="/home" class="back-link">← Back to Chat</a>
-        </div>
-    </div>
+                    <div class="sheet-field" style="margin-top: 10px;">
+                        <div class="sheet-field__label">USERNAME</div>
+                        <div class="sheet-field__value">
+                            <%= user.username %>
+                        </div>
+                    </div>
+
+                    <div class="sheet-field">
+                        <div class="sheet-field__label">EMAIL</div>
+                        <div class="sheet-field__value">
+                            <%= user.email %>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Stats & meta -->
+                <article class="sheet-stats">
+                    <div class="stat-row">
+                        <div class="stat-row__label">HP — PROFILE COMPLETION</div>
+                        <div class="stat-row__bar">
+                            <div class="stat-row__bar-fill--hp" style="width: 80%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-row">
+                        <div class="stat-row__label">MP — CUSTOMIZATION DEPTH</div>
+                        <div class="stat-row__bar">
+                            <div class="stat-row__bar-fill--mp" style="width: 60%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-row">
+                        <div class="stat-row__label">XP — SESSION HISTORY</div>
+                        <div class="stat-row__bar">
+                            <div class="stat-row__bar-fill--xp" style="width: 40%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="sheet-actions">
+                        <button id="uploadBtn" class="btn btn-primary" type="button" onclick="uploadProfilePic()"
+                            disabled>
+                            <span class="pixel-icon">⬆</span>
+                            <span>UPLOAD AVATAR</span>
+                        </button>
+
+                        <a href="/home" class="btn btn-ghost">
+                            <span class="pixel-icon">◂</span>
+                            <span>BACK TO LOBBY</span>
+                        </a>
+                    </div>
+
+                    <div id="statusLine" class="status-line"></div>
+                </article>
+            </section>
+        </section>
+    </main>
 
     <script>
         const fileInput = document.getElementById('fileInput');
         const preview = document.getElementById('avatarPreview');
         const uploadBtn = document.getElementById('uploadBtn');
-        const statusMsg = document.getElementById('statusMsg');
+        const statusLine = document.getElementById('statusLine');
         let selectedBase64 = null;
 
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            if (file.size > 5 * 1024 * 1024) { showStatus('Max 5MB!', 'error'); return; }
+            if (file.size > 5 * 1024 * 1024) {
+                setStatus('Max file size is 5MB.', 'error');
+                return;
+            }
             const reader = new FileReader();
             reader.onload = () => {
                 selectedBase64 = reader.result;
                 preview.src = selectedBase64;
                 uploadBtn.disabled = false;
+                setStatus('Ready to upload new portrait.', 'success');
             };
             reader.readAsDataURL(file);
         });
@@ -245,7 +125,8 @@
         async function uploadProfilePic() {
             if (!selectedBase64) return;
             uploadBtn.disabled = true;
-            uploadBtn.textContent = '⏳ UPLOADING...';
+            uploadBtn.textContent = 'UPLOADING...';
+            setStatus('Uploading to cloud...', 'success');
             try {
                 const res = await fetch('/profile/update', {
                     method: 'PUT',
@@ -254,22 +135,26 @@
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    showStatus('Avatar updated!', 'success');
+                    setStatus('Avatar updated successfully.', 'success');
                     selectedBase64 = null;
                 } else {
-                    showStatus(data.message || 'Failed', 'error');
+                    setStatus(data.message || 'Upload failed.', 'error');
                     uploadBtn.disabled = false;
                 }
             } catch (err) {
-                showStatus('Something went wrong', 'error');
+                setStatus('Something went wrong while uploading.', 'error');
                 uploadBtn.disabled = false;
             }
-            uploadBtn.textContent = '▶ UPLOAD AVATAR';
+            uploadBtn.textContent = 'UPLOAD AVATAR';
         }
 
-        function showStatus(msg, type) {
-            statusMsg.textContent = msg;
-            statusMsg.className = 'status-msg ' + type;
+        function setStatus(msg, type) {
+            statusLine.textContent = msg;
+            statusLine.className = 'status-line ' + (type === 'success'
+                ? 'status-line--success'
+                : type === 'error'
+                    ? 'status-line--error'
+                    : '');
         }
     </script>
 </body>
