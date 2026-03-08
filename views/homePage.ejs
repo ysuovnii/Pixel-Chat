@@ -1,438 +1,127 @@
-<%= '' /* homePage.ejs – Pixel Art Dashboard */ %>
-    <!DOCTYPE html>
-    <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Chat — Star Lobby</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Pixel Chat — Home</title>
-        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-        <style>
-            /* ═══════════════════════════════════════════
-           RESET & BASE
-           ═══════════════════════════════════════════ */
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+  <body class="theme-anti-gravity page--home">
+    <%- include('layout', { user: user, activePage: 'home' }) %>
 
-            body {
-                font-family: 'Press Start 2P', monospace;
-                background: #1a1a2e;
-                min-height: 100vh;
-                image-rendering: pixelated;
-                image-rendering: crisp-edges;
-                color: #E0E8F0;
-            }
-
-            /* ═══════════════════════════════════════════
-           SCANLINE OVERLAY
-           ═══════════════════════════════════════════ */
-            body::after {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                background: repeating-linear-gradient(0deg,
-                        transparent,
-                        transparent 2px,
-                        rgba(0, 0, 0, 0.06) 2px,
-                        rgba(0, 0, 0, 0.06) 4px);
-                z-index: 999;
-            }
-
-            /* ═══════════════════════════════════════════
-           TOP NAV BAR
-           ═══════════════════════════════════════════ */
-            .top-bar {
-                background: #16213e;
-                border-bottom: 4px solid #0f3460;
-                padding: 12px 24px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
-            }
-
-            .top-bar-left {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
-
-            .top-bar-logo {
-                font-size: 14px;
-                color: #53d769;
-                text-shadow: 2px 2px 0 #1a4a1a, 0 0 10px rgba(83, 215, 105, 0.3);
-                letter-spacing: 2px;
-            }
-
-            .top-bar-subtitle {
-                font-size: 7px;
-                color: #5a7a9a;
-                margin-top: 2px;
-            }
-
-            .top-bar-right {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .top-bar-user {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin-right: 8px;
-            }
-
-            .top-bar-avatar {
-                width: 32px;
-                height: 32px;
-                border: 2px solid #53d769;
-                image-rendering: pixelated;
-                object-fit: cover;
-            }
-
-            .top-bar-username {
-                font-size: 8px;
-                color: #8AB8D8;
-            }
-
-            .nav-btn {
-                font-family: 'Press Start 2P', monospace;
-                font-size: 7px;
-                padding: 8px 14px;
-                border: 3px solid;
-                cursor: pointer;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 4px;
-                transition: filter 0.1s;
-            }
-
-            .nav-btn:hover {
-                filter: brightness(1.15);
-            }
-
-            .nav-btn:active {
-                filter: brightness(0.9);
-            }
-
-            .nav-btn.profile {
-                color: #1D2A42;
-                background: linear-gradient(180deg, #8AB8D8 0%, #5A8AAA 100%);
-                border-color: #AAD0E8 #3A6A8A #3A6A8A #AAD0E8;
-            }
-
-            .nav-btn.danger {
-                color: #4A1A1A;
-                background: linear-gradient(180deg, #E8A8A8 0%, #CC7A7A 100%);
-                border-color: #F0C8C8 #8A4A4A #8A4A4A #F0C8C8;
-            }
-
-            /* ═══════════════════════════════════════════
-           MAIN CONTENT
-           ═══════════════════════════════════════════ */
-            .main-content {
-                max-width: 900px;
-                margin: 0 auto;
-                padding: 30px 20px;
-            }
-
-            /* ── Section Header ── */
-            .section-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-bottom: 20px;
-            }
-
-            .section-title {
-                font-size: 11px;
-                color: #53d769;
-                text-shadow: 1px 1px 0 #1a4a1a;
-                letter-spacing: 1px;
-            }
-
-            .online-counter {
-                font-size: 8px;
-                color: #5a7a9a;
-                background: #16213e;
-                border: 2px solid #0f3460;
-                padding: 6px 10px;
-            }
-
-            .online-dot {
-                display: inline-block;
-                width: 6px;
-                height: 6px;
-                background: #53d769;
-                margin-right: 4px;
-                animation: blink 1.5s steps(2) infinite;
-            }
-
-            @keyframes blink {
-
-                0%,
-                100% {
-                    opacity: 1;
-                }
-
-                50% {
-                    opacity: 0.3;
-                }
-            }
-
-            /* ── Empty State ── */
-            .empty-state {
-                text-align: center;
-                padding: 60px 20px;
-                color: #5a7a9a;
-            }
-
-            .empty-state .empty-icon {
-                font-size: 48px;
-                display: block;
-                margin-bottom: 16px;
-                opacity: 0.5;
-            }
-
-            .empty-state p {
-                font-size: 9px;
-                line-height: 2;
-            }
-
-            /* ═══════════════════════════════════════════
-           USER CARDS GRID
-           ═══════════════════════════════════════════ */
-            .users-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                gap: 12px;
-            }
-
-            .user-card {
-                background: #16213e;
-                border: 3px solid #0f3460;
-                padding: 16px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-                cursor: pointer;
-                text-decoration: none;
-                color: inherit;
-                transition: transform 0.15s, box-shadow 0.15s;
-                box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
-                position: relative;
-                overflow: hidden;
-            }
-
-            .user-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 3px;
-                background: linear-gradient(90deg, #53d769, #3A9A4A, #53d769);
-                opacity: 0;
-                transition: opacity 0.15s;
-            }
-
-            .user-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 4px 7px 0 rgba(0, 0, 0, 0.4);
-                border-color: #53d769;
-            }
-
-            .user-card:hover::before {
-                opacity: 1;
-            }
-
-            .user-card:active {
-                transform: translateY(0);
-                box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
-            }
-
-            .user-card-avatar {
-                width: 56px;
-                height: 56px;
-                border: 3px solid #0f3460;
-                image-rendering: pixelated;
-                image-rendering: crisp-edges;
-                object-fit: cover;
-                background: #5A7A9A;
-            }
-
-            .user-card:hover .user-card-avatar {
-                border-color: #53d769;
-            }
-
-            .user-card-name {
-                font-size: 9px;
-                color: #E0E8F0;
-                text-align: center;
-                word-break: break-word;
-            }
-
-            .user-card-status {
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 7px;
-                color: #53d769;
-            }
-
-            .status-pip {
-                width: 6px;
-                height: 6px;
-                background: #53d769;
-            }
-
-            .user-card-action {
-                font-size: 7px;
-                color: #5a7a9a;
-                margin-top: 2px;
-                opacity: 0;
-                transition: opacity 0.15s;
-            }
-
-            .user-card:hover .user-card-action {
-                opacity: 1;
-                color: #53d769;
-            }
-
-            /* ═══════════════════════════════════════════
-           FOOTER
-           ═══════════════════════════════════════════ */
-            .footer {
-                text-align: center;
-                padding: 30px 20px;
-                font-size: 7px;
-                color: #2a3a4a;
-            }
-
-            /* ═══════════════════════════════════════════
-           RESPONSIVE
-           ═══════════════════════════════════════════ */
-            @media (max-width: 600px) {
-                .top-bar {
-                    flex-direction: column;
-                    gap: 10px;
-                    padding: 10px 14px;
-                }
-
-                .users-grid {
-                    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                    gap: 8px;
-                }
-
-                .top-bar-username {
-                    display: none;
-                }
-            }
-        </style>
-    </head>
-
-    <body>
-
-        <!-- ═══════════════ TOP NAV ═══════════════ -->
-        <nav class="top-bar">
-            <div class="top-bar-left">
-                <div>
-                    <div class="top-bar-logo">💬 PIXEL CHAT</div>
-                    <div class="top-bar-subtitle">SELECT A PLAYER TO CHAT</div>
-                </div>
+    <main class="page-shell">
+      <section class="home-layout">
+        <!-- HERO: START ADVENTURE -->
+        <section class="home-hero float-3">
+          <div class="home-hero__stars float-4"></div>
+          <div class="home-hero__content">
+            <h1 class="home-hero__title">PIXEL CHAT — ANTI‑GRAVITY</h1>
+            <p class="home-hero__tagline">
+              Party members drift between worlds. Select a player to open a
+              private link and trade dialogue in zero‑gravity space.
+            </p>
+            <!-- profile pic -->
+            <!-- <div class="chat-avatar chat-avatar--self float-3">
+            <img
+              src="<%= user.profilePic || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username) + '&background=5A7A9A&color=fff&size=64&bold=true') %>"
+              alt=""
+              id="selfAvatar"
+            />
+            </div> -->
+            <p class="home-hero__tagline">
+              Current hero:
+              <span style="color: var(--color-accent-cyan);">
+                <%= user.username %>
+              </span>
+            </p>
+            <div class="home-hero__cta">
+              <a href="/home" class="btn btn-primary">
+                <span class="pixel-icon">▶</span>
+                <span>START ADVENTURE</span>
+              </a>
             </div>
-            <div class="top-bar-right">
-                <div class="top-bar-user">
-                    <img class="top-bar-avatar"
-                        src="<%= user.profilePic || 'https://ui-avatars.com/api/?name=' + user.username + '&background=5A7A9A&color=fff&size=32&bold=true' %>"
-                        alt="" />
-                    <span class="top-bar-username">
-                        <%= user.username %>
-                    </span>
-                </div>
-                <a href="/profile" class="nav-btn profile">⚙ PROFILE</a>
-                <a href="/logout" class="nav-btn danger">⏻ LOGOUT</a>
+          </div>
+          <div class="home-hero__sprite float-1"></div>
+          <div class="home-hero__orbit float-2"></div>
+        </section>
+
+        <!-- PARTY LIST -->
+        <aside class="home-party float-1">
+          <header class="home-party__header">
+            <h2 class="home-party__title">ONLINE PARTY</h2>
+            <div class="home-party__count">
+              <span id="partyCount">0</span> ONLINE
             </div>
-        </nav>
-
-        <!-- ═══════════════ MAIN ═══════════════ -->
-        <div class="main-content">
-            <div class="section-header">
-                <span class="section-title">▸ ONLINE PLAYERS</span>
-                <span class="online-counter">
-                    <span class="online-dot"></span>
-                    <span id="onlineCount">0</span> ONLINE
-                </span>
+          </header>
+          <div id="partyGrid" class="home-party__grid">
+            <div id="partyEmpty" class="home-party__empty">
+              👾 No other players detected...<br />
+              Waiting for a new challenger to appear.
             </div>
+          </div>
+        </aside>
+      </section>
+    </main>
 
-            <div class="users-grid" id="usersGrid">
-                <div class="empty-state" id="emptyState">
-                    <span class="empty-icon">👾</span>
-                    <p>No other players online...<br>Waiting for someone to join!</p>
-                </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const currentUser = "<%= user.username %>";
+      const currentPic = "<%= user.profilePic || '' %>";
+
+      const makeAvatar = (name) =>
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          name
+        )}&background=5A7A9A&color=fff&size=64&bold=true`;
+
+      socket.on("connect", () => {
+        socket.emit("userJoin", {
+          username: currentUser,
+          profilePic: currentPic,
+        });
+      });
+
+      socket.on("onlineUsers", (users) => {
+        const grid = document.getElementById("partyGrid");
+        const empty = document.getElementById("partyEmpty");
+        const count = document.getElementById("partyCount");
+
+        const others = users.filter((u) => u.username !== currentUser);
+        count.textContent = others.length;
+
+        if (others.length === 0) {
+          if (empty) empty.style.display = "block";
+          grid.innerHTML = "";
+          grid.appendChild(empty);
+          return;
+        }
+
+        grid.innerHTML = "";
+
+        others.forEach((u) => {
+          const card = document.createElement("a");
+          card.href = `/chat/${encodeURIComponent(u.username)}`;
+          card.className = "home-party-card float-2";
+          card.innerHTML = `
+            <div class="home-party-card__avatar-wrap">
+              <img class="home-party-card__avatar"
+                src="${u.profilePic || makeAvatar(u.username)}"
+                alt="" />
+              <span class="home-party-card__status"></span>
             </div>
-        </div>
-
-        <div class="footer">PIXEL CHAT v1.0 — PRESS START</div>
-
-        <!-- ═══════════════ SOCKET LOGIC ═══════════════ -->
-        <script src="/socket.io/socket.io.js"></script>
-        <script>
-            const socket = io();
-            const currentUser = "<%= user.username %>";
-            const currentPic = "<%= user.profilePic || '' %>";
-            const pixelAvatar = (name) =>
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=5A7A9A&color=fff&size=56&bold=true`;
-
-            // Announce self
-            socket.on("connect", () => {
-                socket.emit("userJoin", { username: currentUser, profilePic: currentPic });
-            });
-
-            // Online users
-            socket.on("onlineUsers", (users) => {
-                const grid = document.getElementById("usersGrid");
-                const counter = document.getElementById("onlineCount");
-                const others = users.filter(u => u.username !== currentUser);
-                counter.textContent = others.length;
-
-                if (others.length === 0) {
-                    grid.innerHTML = `
-                    <div class="empty-state" id="emptyState">
-                        <span class="empty-icon">👾</span>
-                        <p>No other players online...<br>Waiting for someone to join!</p>
-                    </div>`;
-                    return;
-                }
-
-                grid.innerHTML = '';
-                others.forEach(u => {
-                    const card = document.createElement('a');
-                    card.href = `/chat/${encodeURIComponent(u.username)}`;
-                    card.className = 'user-card';
-                    card.innerHTML = `
-                    <img class="user-card-avatar"
-                         src="${u.profilePic || pixelAvatar(u.username)}" alt="" />
-                    <span class="user-card-name">${u.username}</span>
-                    <span class="user-card-status">
-                        <span class="status-pip"></span> ONLINE
-                    </span>
-                    <span class="user-card-action">▸ START CHAT</span>`;
-                    grid.appendChild(card);
-                });
-            });
-        </script>
-
-    </body>
-
-    </html>
+            <div class="home-party-card__info">
+              <div class="home-party-card__name">${u.username}</div>
+              <div class="home-party-card__action">▸ OPEN PRIVATE LINK</div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      });
+    </script>
+  </body>
+</html>
