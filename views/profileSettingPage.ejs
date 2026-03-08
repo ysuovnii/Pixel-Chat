@@ -10,7 +10,7 @@
 </head>
 
 <body class="theme-anti-gravity page--profile">
-    <%- include('layout', { user: user, activePage: 'profile' }) %>
+    <!-- <%- include('layout', { user: user, activePage: 'profile' }) %> -->
 
     <main class="page-shell">
         <section class="sheet float-2">
@@ -37,7 +37,7 @@
                             src="<%= user.profilePic || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username) + '&background=5A7A9A&color=fff&size=96&bold=true' %>"
                             alt="" />
                     </div>
-                    <p class="sheet-avatar__hint">Click portrait to change avatar.</p>
+                    <!-- <p class="sheet-avatar__hint">Click portrait to change avatar.</p> -->
 
                     <input type="file" id="fileInput" accept="image/*" style="display: none;" />
 

@@ -18,13 +18,13 @@
       <section class="chat-dialog float-2">
         <!-- Floating avatars overlapping dialogue box -->
         <div class="chat-dialog__avatars">
-          <div class="chat-avatar chat-avatar--self float-3">
+          <!-- <div class="chat-avatar chat-avatar--self float-3">
             <img
               src="<%= user.profilePic || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username) + '&background=5A7A9A&color=fff&size=64&bold=true') %>"
               alt=""
               id="selfAvatar"
             />
-          </div>
+          </div> -->
           <div class="chat-avatar chat-avatar--partner float-1">
             <img
               src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(chatPartner) %>&background=5A7A9A&color=fff&size=64&bold=true"
@@ -46,9 +46,9 @@
               Scanning for signal...
             </div>
           </div>
-          <div class="chat-dialog__status">
+          <!-- <div class="chat-dialog__status">
             <%= user.username %> ► <%= chatPartner %>
-          </div>
+          </div> -->
         </header>
 
         <section id="chatLog" class="chat-log"></section>
@@ -64,7 +64,7 @@
               autocomplete="off"
               onkeydown="if (event.key === 'Enter') sendMessage();"
             />
-            <span class="chat-input__cursor">█</span>
+            <!-- <span class="chat-input__cursor">█</span> -->
           </div>
 
           <div
@@ -121,7 +121,7 @@
       socket.on("onlineUsers", (users) => {
         const partnerOnline = users.find((u) => u.username === chatPartner);
         if (partnerOnline) {
-          partnerStatusEl.textContent = "● ONLINE";
+          partnerStatusEl.textContent = "● Online";
           partnerStatusEl.className =
             "chat-dialog__status chat-dialog__status--online";
           if (partnerOnline.profilePic) {
