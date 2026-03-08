@@ -6,10 +6,11 @@ import http from 'http';
 import { Server } from 'socket.io';
 import connectDB from './lib/db.js';
 import authRoute from './routes/auth.route.js'
-import homeRoutes from './routes/home.route.js';
+import homeRoute from './routes/home.route.js';
+import messageRoute from './routes/message.route.js'; 
+import Message from './models/message.model.js';
 import cookieParser from "cookie-parser";
 import ml from './middleware/auth.middleware.js';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config();
@@ -37,8 +38,19 @@ io.on("connection", (socket) => {
         io.emit("onlineUsers", userList);
     });
 
-    socket.on("sendMessage", ({ from, to, message, profilePic }) => {
+    socket.on("sendMessage", async ({ from, to, message, profilePic }) => {
         const payload = { from, to, message, profilePic };
+
+        const newMsg = new Message({
+            senderID : from,
+            receiverID : to, 
+            text : message,
+        })
+
+        await newMsg.save();
+
+        console.log("Saved : ", newMsg);
+
         // Send to the recipient if they are online
         const recipient = onlineUsers.get(to);
         if (recipient) {
@@ -75,7 +87,8 @@ app.use(cookieParser());
 
 // route
 app.use('/', authRoute);
-app.use('/', authVerify, homeRoutes);
+app.use('/', authVerify, homeRoute);
+app.use("/message", authVerify, messageRoute);
 
 // entry point 
 server.listen(PORT, () => {
