@@ -18,13 +18,6 @@
       <section class="chat-dialog float-2">
         <!-- Floating avatars overlapping dialogue box -->
         <div class="chat-dialog__avatars">
-          <!-- <div class="chat-avatar chat-avatar--self float-3">
-            <img
-              src="<%= user.profilePic || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username) + '&background=5A7A9A&color=fff&size=64&bold=true') %>"
-              alt=""
-              id="selfAvatar"
-            />
-          </div> -->
           <div class="chat-avatar chat-avatar--partner float-1">
             <img
               src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(chatPartner) %>&background=5A7A9A&color=fff&size=64&bold=true"
@@ -34,7 +27,7 @@
           </div>
         </div>
 
-        <header class="chat-dialog__header">
+        <header class="chat-dialog__header" style="padding: 14px 16px 10px;">
           <div>
             <div class="chat-dialog__name">
               <%= chatPartner %>
@@ -46,39 +39,48 @@
               Scanning for signal...
             </div>
           </div>
-          <!-- <div class="chat-dialog__status">
-            <%= user.username %> ► <%= chatPartner %>
-          </div> -->
         </header>
 
         <section id="chatLog" class="chat-log"></section>
 
         <footer class="chat-input">
-          <div class="chat-input__shell">
-            <span class="chat-input__prompt">»</span>
-            <input
-              id="messageInput"
-              class="chat-input__field"
-              type="text"
-              placeholder="Type your spell..."
-              autocomplete="off"
-              onkeydown="if (event.key === 'Enter') sendMessage();"
-            />
-            <!-- <span class="chat-input__cursor">█</span> -->
+          <!-- Typing indicator -->
+          <div id="typingIndicator" class="typing-indicator typing-indicator--hidden">
+            <span id="typingText"></span>
+            <span class="typing-indicator__dots">
+              <span class="typing-indicator__dot"></span>
+              <span class="typing-indicator__dot"></span>
+              <span class="typing-indicator__dot"></span>
+            </span>
           </div>
 
-          <div
-            id="emojiToggle"
-            class="chat-input__emoji"
-            title="Emotes"
-          >
-            🙂
-          </div>
+          <!-- Single-row input bar -->
+          <div class="chat-input__row">
+            <div
+              id="emojiToggle"
+              class="chat-input__emoji"
+              title="Emotes"
+            >
+              🙂
+            </div>
 
-          <button class="btn btn-primary" type="button" onclick="sendMessage()">
-            <span class="pixel-icon">▶</span>
-            <span>CAST</span>
-          </button>
+            <div class="chat-input__shell">
+              <span class="chat-input__prompt">»</span>
+              <input
+                id="messageInput"
+                class="chat-input__field"
+                type="text"
+                placeholder="Type your spell..."
+                autocomplete="off"
+                onkeydown="if (event.key === 'Enter') sendMessage();"
+              />
+            </div>
+
+            <button class="btn btn-primary" type="button" onclick="sendMessage()">
+              <span class="pixel-icon">▶</span>
+              <span>CAST</span>
+            </button>
+          </div>
 
           <div id="emojiPanel" class="emoji-panel">
             <div class="emoji-panel__section-label">SMILEYS</div>
@@ -107,6 +109,8 @@
       const chatLog = document.getElementById("chatLog");
       const msgInput = document.getElementById("messageInput");
       const partnerAvatarEl = document.getElementById("partnerAvatar");
+      const typingIndicator = document.getElementById("typingIndicator");
+      const typingText = document.getElementById("typingText");
 
       // State (kept for snippet / future use if needed)
       const conversations = new Map();
@@ -131,6 +135,35 @@
           partnerStatusEl.textContent = "○ OFFLINE";
           partnerStatusEl.className =
             "chat-dialog__status chat-dialog__status--offline";
+        }
+      });
+
+      // ===== TYPING INDICATOR =====
+      let typingTimeout = null;
+      let isTyping = false;
+
+      msgInput.addEventListener("input", () => {
+        if (!isTyping) {
+          isTyping = true;
+          socket.emit("typing", { from: currentUser, to: chatPartner });
+        }
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+          isTyping = false;
+          socket.emit("stopTyping", { from: currentUser, to: chatPartner });
+        }, 1500);
+      });
+
+      socket.on("userTyping", ({ from }) => {
+        if (from === chatPartner) {
+          typingText.textContent = `${from} is casting a spell`;
+          typingIndicator.classList.remove("typing-indicator--hidden");
+        }
+      });
+
+      socket.on("userStopTyping", ({ from }) => {
+        if (from === chatPartner) {
+          typingIndicator.classList.add("typing-indicator--hidden");
         }
       });
 
@@ -167,44 +200,16 @@
         chatLog.scrollTop = chatLog.scrollHeight;
       }
 
-      // function sendMessage() {
-      //   const text = msgInput.value.trim();
-      //   if (!text) return;
-      //   socket.emit("sendMessage", {
-      //     from: currentUser,
-      //     to: chatPartner,
-      //     message: text,
-      //     profilePic: currentPic,
-      //   });
-      //   msgInput.value = "";
-      // }
-
-      // function sendMessage() {
-      //   const text = msgInput.value.trim();
-      //   if (!text) return;
-
-      //   const time = timeStr();   // create time
-
-      //   // show message instantly
-      //   appendMessageBubble({
-      //     from: currentUser,
-      //     message: text,
-      //     time
-      //   });
-
-      //   socket.emit("sendMessage", {
-      //     from: currentUser,
-      //     to: chatPartner,
-      //     message: text,
-      //     profilePic: currentPic,
-      //   });
-
-      //   msgInput.value = "";
-      // }
-
       function sendMessage() {
         const text = msgInput.value.trim();
         if (!text) return;
+
+        // Stop typing when sending
+        if (isTyping) {
+          isTyping = false;
+          clearTimeout(typingTimeout);
+          socket.emit("stopTyping", { from: currentUser, to: chatPartner });
+        }
 
         socket.emit("sendMessage", {
           from: currentUser,
@@ -259,18 +264,7 @@
 
       const emojiData = {
         smileys: [
-          "😀",
-          "😁",
-          "😂",
-          "🤣",
-          "😃",
-          "😄",
-          "😆",
-          "😉",
-          "😊",
-          "😎",
-          "🤩",
-          "😍",
+          "😀", "😁", "😂", "🤣", "😃", "😄", "😆", "😉", "😊", "😎", "🤩", "😍",
         ],
         gestures: ["👋", "👌", "✌️", "🤞", "🤟", "👍", "👎", "👏", "🙏"],
         hearts: ["❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎"],
@@ -360,7 +354,6 @@
           console.error("Failed to load messages", err);
         }
       }
-            
 
       // focus input on load
       msgInput.focus();

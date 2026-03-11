@@ -60,6 +60,20 @@ io.on("connection", (socket) => {
         socket.emit("receiveMessage", payload);
     });
 
+    socket.on("typing", ({ from, to }) => {
+        const recipient = onlineUsers.get(to);
+        if (recipient) {
+            io.to(recipient.socketId).emit("userTyping", { from });
+        }
+    });
+
+    socket.on("stopTyping", ({ from, to }) => {
+        const recipient = onlineUsers.get(to);
+        if (recipient) {
+            io.to(recipient.socketId).emit("userStopTyping", { from });
+        }
+    });
+
     socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
         for (const [username, data] of onlineUsers) {
