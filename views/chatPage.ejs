@@ -179,18 +179,32 @@
       //   msgInput.value = "";
       // }
 
+      // function sendMessage() {
+      //   const text = msgInput.value.trim();
+      //   if (!text) return;
+
+      //   const time = timeStr();   // create time
+
+      //   // show message instantly
+      //   appendMessageBubble({
+      //     from: currentUser,
+      //     message: text,
+      //     time
+      //   });
+
+      //   socket.emit("sendMessage", {
+      //     from: currentUser,
+      //     to: chatPartner,
+      //     message: text,
+      //     profilePic: currentPic,
+      //   });
+
+      //   msgInput.value = "";
+      // }
+
       function sendMessage() {
         const text = msgInput.value.trim();
         if (!text) return;
-
-        const time = timeStr();   // create time
-
-        // show message instantly
-        appendMessageBubble({
-          from: currentUser,
-          message: text,
-          time
-        });
 
         socket.emit("sendMessage", {
           from: currentUser,
