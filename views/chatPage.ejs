@@ -167,15 +167,52 @@
         chatLog.scrollTop = chatLog.scrollHeight;
       }
 
+      // function sendMessage() {
+      //   const text = msgInput.value.trim();
+      //   if (!text) return;
+      //   socket.emit("sendMessage", {
+      //     from: currentUser,
+      //     to: chatPartner,
+      //     message: text,
+      //     profilePic: currentPic,
+      //   });
+      //   msgInput.value = "";
+      // }
+
+      // function sendMessage() {
+      //   const text = msgInput.value.trim();
+      //   if (!text) return;
+
+      //   const time = timeStr();   // create time
+
+      //   // show message instantly
+      //   appendMessageBubble({
+      //     from: currentUser,
+      //     message: text,
+      //     time
+      //   });
+
+      //   socket.emit("sendMessage", {
+      //     from: currentUser,
+      //     to: chatPartner,
+      //     message: text,
+      //     profilePic: currentPic,
+      //   });
+
+      //   msgInput.value = "";
+      // }
+
       function sendMessage() {
         const text = msgInput.value.trim();
         if (!text) return;
+
         socket.emit("sendMessage", {
           from: currentUser,
           to: chatPartner,
           message: text,
           profilePic: currentPic,
         });
+
         msgInput.value = "";
       }
 
@@ -295,8 +332,39 @@
         }
       });
 
+      async function loadMessages() {
+        try {
+          const res = await fetch(`/message/${chatPartner}`);
+          const messages = await res.json();
+
+          console.log("Loaded messages:", messages);
+
+          if (!Array.isArray(messages)) return;
+
+          chatLog.innerHTML = ""; // clear old messages
+
+          messages.forEach((msg) => {
+            appendMessageBubble({
+              from: msg.senderID,
+              message: msg.text,
+              time: new Date(msg.createdAt).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            });
+          });
+
+          chatLog.scrollTop = chatLog.scrollHeight;
+
+        } catch (err) {
+          console.error("Failed to load messages", err);
+        }
+      }
+            
+
       // focus input on load
       msgInput.focus();
+      loadMessages();
     </script>
   </body>
 </html>
