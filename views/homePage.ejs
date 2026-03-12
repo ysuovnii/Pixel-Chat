@@ -14,6 +14,12 @@
   <body class="theme-anti-gravity page--home">
     <%- include('layout', { user: user, activePage: 'home' }) %>
 
+    <!-- LOGOUT BUTTON — TOP RIGHT -->
+    <a href="/logout" class="btn-escape float-2" style="position: fixed; top: 24px; right: 24px; z-index: 20;">
+      <span class="pixel-icon">✖</span>
+      <span>ESCAPE</span>
+    </a>
+
     <main class="page-shell">
       <section class="home-layout">
         <!-- HERO: START ADVENTURE -->
@@ -25,14 +31,6 @@
               Party members drift between worlds. Select a player to open a
               private link and trade dialogue in zero‑gravity space.
             </p>
-            <!-- profile pic -->
-            <!-- <div class="chat-avatar chat-avatar--self float-3">
-            <img
-              src="<%= user.profilePic || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username) + '&background=5A7A9A&color=fff&size=64&bold=true') %>"
-              alt=""
-              id="selfAvatar"
-            />
-            </div> -->
             <p class="home-hero__tagline">
               Current hero:
               <span style="color: var(--color-accent-cyan);">
@@ -103,10 +101,11 @@
 
         grid.innerHTML = "";
 
-        others.forEach((u) => {
+        others.forEach((u, i) => {
           const card = document.createElement("a");
           card.href = `/chat/${encodeURIComponent(u.username)}`;
           card.className = "home-party-card float-2";
+          card.style.animationDelay = `${(i * 0.3).toFixed(1)}s`;
           card.innerHTML = `
             <div class="home-party-card__avatar-wrap">
               <img class="home-party-card__avatar"
