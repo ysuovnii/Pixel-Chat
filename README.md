@@ -1,6 +1,6 @@
 # Pixel-Chat 💬🎮
 
-A **real-time chat application** with a retro **16-bit JRPG pixel art** aesthetic, built with Node.js, Express, Socket.IO, and MongoDB. Features a friend request system so users can only chat with accepted allies.
+A **real-time chat application** with a retro **16-bit JRPG pixel art** aesthetic, built with Node.js, Express, Socket.IO, and MongoDB. 
 
 ---
 
