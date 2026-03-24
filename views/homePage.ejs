@@ -66,11 +66,13 @@
       </section>
     </main>
 
+    <script id="friendsData" type="application/json"><%- JSON.stringify(friendsList || []) %></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
       const currentUser = "<%= user.username %>";
       const currentPic = "<%= user.profilePic || '' %>";
+      const friendsList = JSON.parse(document.getElementById("friendsData").textContent);
 
       const makeAvatar = (name) =>
         `https://ui-avatars.com/api/?name=${encodeURIComponent(
@@ -89,19 +91,26 @@
         const empty = document.getElementById("partyEmpty");
         const count = document.getElementById("partyCount");
 
-        const others = users.filter((u) => u.username !== currentUser);
-        count.textContent = others.length;
+        // Only show users who are both online AND in the friends list
+        const onlineFriends = users.filter(
+          (u) => u.username !== currentUser && friendsList.includes(u.username)
+        );
+        count.textContent = onlineFriends.length;
 
-        if (others.length === 0) {
+        if (onlineFriends.length === 0) {
           if (empty) empty.style.display = "block";
           grid.innerHTML = "";
+          empty.innerHTML = `👾 No friends online...<br/>
+            <a href="/search" style="color: var(--color-accent-cyan); font-size: 8px;">
+              🔍 Search for new allies
+            </a>`;
           grid.appendChild(empty);
           return;
         }
 
         grid.innerHTML = "";
 
-        others.forEach((u, i) => {
+        onlineFriends.forEach((u, i) => {
           const card = document.createElement("a");
           card.href = `/chat/${encodeURIComponent(u.username)}`;
           card.className = "home-party-card float-2";

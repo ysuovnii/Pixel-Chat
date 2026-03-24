@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Chat — Search Allies</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <body class="theme-anti-gravity page--search">
+    <%- include('layout', { user: user, activePage: 'search' }) %>
+
+    <!-- LOGOUT BUTTON -->
+    <a href="/logout" class="btn-escape float-2" style="position: fixed; top: 24px; right: 24px; z-index: 20;">
+      <span class="pixel-icon">✖</span>
+      <span>ESCAPE</span>
+    </a>
+
+    <main class="page-shell">
+      <section class="search-layout">
+        <!-- SEARCH PANEL -->
+        <div class="search-panel float-2">
+          <header class="search-panel__header">
+            <h1 class="search-panel__title">🔍 SEARCH ALLIES</h1>
+            <p class="search-panel__subtitle">Locate heroes across the galaxy</p>
+          </header>
+
+          <div class="search-bar">
+            <span class="search-bar__icon">»</span>
+            <input
+              id="searchInput"
+              class="search-bar__field"
+              type="text"
+              placeholder="Enter a hero name..."
+              autocomplete="off"
+            />
+          </div>
+
+          <div id="searchResults" class="search-results">
+            <div id="searchEmpty" class="search-results__empty">
+              👾 Type a name above to scan for allies...
+            </div>
+          </div>
+        </div>
+
+        <!-- PENDING REQUESTS PANEL -->
+        <div class="pending-panel float-1">
+          <header class="pending-panel__header">
+            <h2 class="pending-panel__title">📨 INCOMING REQUESTS</h2>
+            <div class="pending-panel__count">
+              <span id="pendingCount">0</span> PENDING
+            </div>
+          </header>
+
+          <div id="pendingList" class="pending-list">
+            <div id="pendingEmpty" class="pending-list__empty">
+              No incoming transmissions detected.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const currentUser = "<%= user.username %>";
+      const makeAvatar = (name) =>
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          name
+        )}&background=5A7A9A&color=fff&size=64&bold=true`;
+
+      // ===== SEARCH =====
+      let searchTimeout = null;
+      const searchInput = document.getElementById("searchInput");
+      const searchResults = document.getElementById("searchResults");
+      const searchEmpty = document.getElementById("searchEmpty");
+
+      searchInput.addEventListener("input", () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const q = searchInput.value.trim();
+          if (!q) {
+            searchResults.innerHTML = "";
+            searchResults.appendChild(searchEmpty);
+            searchEmpty.style.display = "block";
+            return;
+          }
+          fetchSearch(q);
+        }, 350);
+      });
+
+      async function fetchSearch(query) {
+        try {
+          const res = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
+          const users = await res.json();
+
+          searchResults.innerHTML = "";
+
+          if (!users.length) {
+            const empty = document.createElement("div");
+            empty.className = "search-results__empty";
+            empty.textContent = "No heroes found matching that name...";
+            searchResults.appendChild(empty);
+            return;
+          }
+
+          users.forEach((u, i) => {
+            const card = document.createElement("div");
+            card.className = "search-card float-2";
+            card.style.animationDelay = `${(i * 0.15).toFixed(2)}s`;
+
+            let btnHTML = "";
+            switch (u.status) {
+              case "friends":
+                btnHTML = `<span class="search-card__badge search-card__badge--friend">✓ FRIENDS</span>`;
+                break;
+              case "sent":
+                btnHTML = `<span class="search-card__badge search-card__badge--pending">⏳ PENDING...</span>`;
+                break;
+              case "received":
+                btnHTML = `<span class="search-card__badge search-card__badge--received">📨 INCOMING</span>`;
+                break;
+              default:
+                btnHTML = `<button class="btn btn-primary search-card__btn" onclick="sendRequest('${u._id}', this)">
+                  <span class="pixel-icon">▶</span>
+                  <span>SEND REQUEST</span>
+                </button>`;
+            }
+
+            card.innerHTML = `
+              <div class="search-card__avatar-wrap">
+                <img class="search-card__avatar"
+                  src="${u.profilePic || makeAvatar(u.username)}"
+                  alt="" />
+              </div>
+              <div class="search-card__info">
+                <div class="search-card__name">${u.username}</div>
+              </div>
+              <div class="search-card__action">
+                ${btnHTML}
+              </div>
+            `;
+            searchResults.appendChild(card);
+          });
+        } catch (err) {
+          console.error("Search error:", err);
+        }
+      }
+
+      async function sendRequest(receiverId, btn) {
+        try {
+          btn.disabled = true;
+          btn.innerHTML = `<span>SENDING...</span>`;
+
+          const res = await fetch(`/api/request/send/${receiverId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+          });
+
+          if (res.ok) {
+            btn.outerHTML = `<span class="search-card__badge search-card__badge--pending">⏳ PENDING...</span>`;
+          } else {
+            const data = await res.json();
+            btn.innerHTML = `<span>${data.error || "ERROR"}</span>`;
+            btn.disabled = false;
+          }
+        } catch (err) {
+          console.error("Send request error:", err);
+          btn.innerHTML = `<span>ERROR</span>`;
+          btn.disabled = false;
+        }
+      }
+
+      // ===== PENDING REQUESTS =====
+      async function loadPending() {
+        try {
+          const res = await fetch("/api/request/pending");
+          const requests = await res.json();
+
+          const list = document.getElementById("pendingList");
+          const empty = document.getElementById("pendingEmpty");
+          const count = document.getElementById("pendingCount");
+
+          count.textContent = requests.length;
+
+          if (!requests.length) {
+            list.innerHTML = "";
+            list.appendChild(empty);
+            empty.style.display = "block";
+            return;
+          }
+
+          list.innerHTML = "";
+
+          requests.forEach((r, i) => {
+            const card = document.createElement("div");
+            card.className = "request-card float-1";
+            card.style.animationDelay = `${(i * 0.2).toFixed(1)}s`;
+            card.id = `request-${r._id}`;
+
+            const senderName = r.sender?.username || "Unknown";
+            const senderPic = r.sender?.profilePic || makeAvatar(senderName);
+
+            card.innerHTML = `
+              <div class="request-card__avatar-wrap">
+                <img class="request-card__avatar"
+                  src="${senderPic}" alt="" />
+              </div>
+              <div class="request-card__info">
+                <div class="request-card__name">${senderName}</div>
+                <div class="request-card__sub">wants to join your party</div>
+              </div>
+              <div class="request-card__actions">
+                <button class="btn-confirm" onclick="handleRequest('${r._id}', 'accept', this)">
+                  ✓ ACCEPT
+                </button>
+                <button class="btn-cancel" onclick="handleRequest('${r._id}', 'reject', this)">
+                  ✖ REJECT
+                </button>
+              </div>
+            `;
+            list.appendChild(card);
+          });
+        } catch (err) {
+          console.error("Load pending error:", err);
+        }
+      }
+
+      async function handleRequest(requestId, action, btn) {
+        try {
+          btn.disabled = true;
+          const res = await fetch(`/api/request/${action}/${requestId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+          });
+
+          if (res.ok) {
+            const card = document.getElementById(`request-${requestId}`);
+            if (card) {
+              card.style.opacity = "0";
+              card.style.transform = "translateX(40px)";
+              card.style.transition = "all 0.3s ease";
+              setTimeout(() => {
+                card.remove();
+                // Update count
+                const remaining = document.querySelectorAll(".request-card").length;
+                document.getElementById("pendingCount").textContent = remaining;
+                if (remaining === 0) {
+                  const list = document.getElementById("pendingList");
+                  const empty = document.createElement("div");
+                  empty.className = "pending-list__empty";
+                  empty.textContent = "No incoming transmissions detected.";
+                  list.appendChild(empty);
+                }
+              }, 300);
+            }
+          } else {
+            const data = await res.json();
+            alert(data.error || "Something went wrong");
+            btn.disabled = false;
+          }
+        } catch (err) {
+          console.error("Handle request error:", err);
+          btn.disabled = false;
+        }
+      }
+
+      // Load pending on page load
+      loadPending();
+      searchInput.focus();
+    </script>
+  </body>
+</html>
