@@ -8,6 +8,7 @@ import connectDB from './lib/db.js';
 import authRoute from './routes/auth.route.js'
 import homeRoute from './routes/home.route.js';
 import messageRoute from './routes/message.route.js'; 
+import requestRoute from './routes/request.route.js';
 import Message from './models/message.model.js';
 import cookieParser from "cookie-parser";
 import ml from './middleware/auth.middleware.js';
@@ -102,6 +103,7 @@ app.use(cookieParser());
 // route
 app.use('/', authRoute);
 app.use('/', authVerify, homeRoute);
+app.use('/', authVerify, requestRoute);
 app.use("/message", authVerify, messageRoute);
 
 // entry point 

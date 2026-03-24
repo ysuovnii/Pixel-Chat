@@ -1,40 +1,22 @@
 # Pixel-Chat 💬🎮
 
-A **real-time chat application** with a retro **16-bit JRPG pixel art** aesthetic, built with Node.js, Express, Socket.IO, and MongoDB.
-
-![Home Page](preview/HomePage.png)
+A **real-time chat application** with a retro **16-bit JRPG pixel art** aesthetic, built with Node.js, Express, Socket.IO, and MongoDB. Features a friend request system so users can only chat with accepted allies.
 
 ---
 
 ## ✨ Features
 
 - ⚡ **Real-time Messaging** — Instant communication powered by Socket.IO
-- 🎨 **Retro Pixel Art UI** — 16-bit JRPG-inspired design with floating animations
+- 🎨 **Retro Pixel Art UI** — 16-bit JRPG-inspired design with floating anti-gravity animations
 - 🔐 **Authentication** — Secure login/signup with JWT and bcrypt
+- 👥 **Friend Request System** — Send, accept, or reject friend requests before chatting
+- 🔍 **Search Page** — Discover and connect with other users across the galaxy
+- 🟢 **Online Friends** — Home page shows only online friends with live status
 - 👤 **Profile Settings** — Upload profile pictures via Cloudinary
-- 🟢 **Online Status** — See who's online in real-time
-- ✍️ **Typing Indicators** — Know when someone is typing
+- ✍️ **Typing Indicators** — Know when someone is casting a spell
+- 😀 **Pixel Emoji Engine** — Pixelated emoji rendering in chat
 - 📧 **Email Integration** — Nodemailer support for account-related emails
 - 🖥️ **Server-Side Rendering** — Fast, dynamic pages with EJS templates
-
----
-
-## 📸 Preview
-
-### 🔑 Login Page
-![Login Page](preview/Login%20Page.png)
-
-### 📝 Signup Page
-![Signup Page](preview/Signup%20Page.png)
-
-### 🏠 Home Page
-![Home Page](preview/HomePage.png)
-
-### 💬 Chat Page
-![Chat Page](preview/Chat%20Page.png)
-
-### ⚙️ Profile Settings
-![Profile Settings Page](preview/ProfileSettingPage.png)
 
 ---
 
@@ -56,17 +38,33 @@ A **real-time chat application** with a retro **16-bit JRPG pixel art** aestheti
 
 ```
 Pixel-Chat/
-├── controller/     # Business logic and app functionalities
-├── lib/            # Utility functions and library configurations (DB, mail, Cloudinary)
-├── middleware/     # Custom middlewares (authentication, error handling)
-├── models/         # Mongoose database schemas and models
-├── preview/        # App preview screenshots
-├── public/         # Static assets (CSS, images)
-├── routes/         # Express routes mapping URLs to controllers
-├── views/          # EJS templates for the frontend UI
-├── .gitignore      # Ignored files for Git
-├── index.js        # Main application entry point (Express + Socket.IO server)
-└── package.json    # Project metadata and dependencies
+├── controller/
+│   ├── auth.controller.js       # Login, signup, logout, profile update
+│   ├── home.controller.js       # Home page (friends-only) & chat guard
+│   ├── message.controller.js    # Send & retrieve messages
+│   └── request.controller.js    # Friend request API (send/accept/reject/search)
+├── lib/                         # Utility functions (DB, Cloudinary, JWT)
+├── middleware/                  # Auth middleware (JWT verification)
+├── models/
+│   ├── user.model.js            # User schema (with friends array)
+│   ├── message.model.js         # Message schema
+│   └── request.model.js         # Friend request schema (pending/accepted/rejected)
+├── public/css/                  # Stylesheets (JRPG pixel theme)
+├── routes/
+│   ├── auth.route.js            # Auth routes (login/signup/logout)
+│   ├── home.route.js            # Home & chat page routes
+│   ├── message.route.js         # Message API routes
+│   └── request.route.js         # Friend request & search routes
+├── views/
+│   ├── layout.ejs               # Shared command menu navigation
+│   ├── loginPage.ejs            # Login page
+│   ├── signupPage.ejs           # Signup page
+│   ├── homePage.ejs             # Home page (online friends list)
+│   ├── chatPage.ejs             # Chat page with emoji panel
+│   ├── searchPage.ejs           # Search & friend request management
+│   └── profileSettingPage.ejs   # Profile settings (avatar upload)
+├── index.js                     # Entry point (Express + Socket.IO server)
+└── package.json                 # Dependencies and scripts
 ```
 
 ---
@@ -90,7 +88,7 @@ cd Pixel-Chat
 npm install
 
 # Create a .env file with the following variables
-# PORT=3000
+# PORT=5050
 # MONGO_URI=your_mongodb_connection_string
 # JWT_KEY=your_jwt_secret
 # CLOUDINARY_CLOUD_NAME=your_cloud_name
@@ -101,7 +99,17 @@ npm install
 npm run dev
 ```
 
-The app will be available at `http://localhost:3000`
+The app will be available at `http://localhost:5050`
+
+---
+
+## 📖 How It Works
+
+1. **Sign up** — Create a hero on the signup page
+2. **Search** — Use the 🔍 Search page to find other players
+3. **Send request** — Click "SEND REQUEST" on a player card
+4. **Accept** — The other player sees the incoming request and accepts
+5. **Chat** — Both players now appear on each other's home page when online — click to open a private chat
 
 ---
 
