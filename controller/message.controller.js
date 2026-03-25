@@ -1,4 +1,5 @@
 import Message from '../models/message.model.js';
+import { encrypt, decrypt } from '../lib/encryption.js';
 
 export const sendMessage = async (req, res) => {
     try {
@@ -7,10 +8,12 @@ export const sendMessage = async (req, res) => {
 
         const senderID = req.user._id;
 
+        const encryptedText = encrypt(text);
+
         const newMessage = new Message({
             senderID,
             receiverID,
-            text
+            text: encryptedText
         });
 
         await newMessage.save();
@@ -23,38 +26,6 @@ export const sendMessage = async (req, res) => {
         });
     }
 };
-
-// export const getMessages = async (req, res) => {
-
-//     try {
-
-//         // const { id: userToChatId } = req.params;
-//         // const senderId = req.user._id;
-
-//         // const messages = await Message.find({
-//         //     $or: [
-//         //         { senderId: senderId, receiverId: userToChatId },
-//         //         { senderId: userToChatId, receiverId: senderId }
-//         //     ]
-//         // });
-
-//         // res.json(messages);
-//         const currentUser = req.user.username;
-//         const otherUser = req.params.user;
-
-//         const messages = await Message.find({
-//             $or: [
-//                 { from: currentUser, to: otherUser },
-//                 { from: otherUser, to: currentUser }
-//             ]
-//         }).sort({createdAt : 1});
-
-//         res.json(messages);
-
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// };
 
 export const getMessages = async (req, res) => {
     try {
@@ -72,12 +43,43 @@ export const getMessages = async (req, res) => {
             ]
         }).sort({ createdAt: 1 });
 
-        console.log("Messages found:", messages);
+        // Decrypt message text before sending to client
+        const decryptedMessages = messages.map(msg => {
+            const msgObj = msg.toObject();
+            try {
+                msgObj.text = decrypt(msgObj.text);
+            } catch (e) {
+                // If decryption fails (e.g. old unencrypted messages), return as-is
+                console.warn("Could not decrypt message:", msgObj._id);
+            }
+            return msgObj;
+        });
 
-        res.json(messages);
+        console.log("Messages found:", decryptedMessages.length);
+
+        res.json(decryptedMessages);
 
     } catch (error) {
         console.error("getMessages error:", error);
         res.status(500).json({ error: error.message });
+    }
+};
+
+export const deleteMessages = async (req, res) => {
+    try {
+        const currentUser = req.user.username;
+        const otherUser = req.params.user;
+
+        await Message.deleteMany({
+            $or: [
+                { senderID: currentUser, receiverID: otherUser },
+                { senderID: otherUser, receiverID: currentUser }
+            ]
+        });
+
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error("deleteMessages error:", error);
+        res.status(500).json({ error: "Failed to clear chat" });
     }
 };

@@ -1677,10 +1677,115 @@ button {
   padding: 5px 8px;
 }
 
-/* RESPONSIVE — SEARCH PAGE */
-
 @media (max-width: 960px) {
   .search-layout {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   HOME PAGE — USER PROFILE CARD
+   ============================================================ */
+
+.home-profile {
+  position: relative;
+  height: 100%;
+  min-height: 260px;
+  background: var(--color-bg-panel-alt);
+  border: 4px solid var(--color-border-dark);
+  box-shadow: var(--shadow-strong);
+  padding: 18px 16px;
+  overflow: hidden;
+}
+
+.home-profile__stars {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, #ffffff 0, #ffffff 1px, transparent 1px);
+  background-size: 12px 12px;
+  opacity: 0.15;
+  z-index: 0;
+}
+
+.home-profile__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.home-profile__avatar-frame {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border: 4px solid var(--color-border-mid);
+  background: #28345f;
+  box-shadow:
+    0 0 10px rgba(76, 215, 245, 0.35),
+    0 0 20px rgba(76, 215, 245, 0.15),
+    var(--shadow-soft);
+}
+
+.home-profile__avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-profile__status-dot {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  background: var(--color-accent-green);
+  border: 3px solid #050814;
+  box-shadow: 0 0 6px rgba(79, 214, 109, 0.5);
+}
+
+.home-profile__info {
+  width: 100%;
+  text-align: center;
+}
+
+.home-profile__label {
+  font-size: 6px;
+  color: var(--color-text-soft);
+  letter-spacing: 0.12em;
+  margin-bottom: 3px;
+}
+
+.home-profile__username {
+  font-size: 11px;
+  color: var(--color-accent-cyan);
+  text-shadow: 0 0 8px rgba(76, 215, 245, 0.4);
+}
+
+.home-profile__email {
+  font-size: 7px;
+  color: var(--color-text-muted);
+  word-break: break-all;
+}
+
+.home-profile__status-text {
+  font-size: 8px;
+  color: var(--color-accent-green);
+  text-shadow: 0 0 6px rgba(79, 214, 109, 0.4);
+}
+
+.home-profile__actions {
+  margin-top: 6px;
+}
+
+/* RESPONSIVE — HOME PAGE */
+
+@media (max-width: 860px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+  }
+  .home-profile {
+    min-height: auto;
   }
 }
