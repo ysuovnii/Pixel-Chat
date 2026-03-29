@@ -10,7 +10,6 @@ import homeRoute from './routes/home.route.js';
 import messageRoute from './routes/message.route.js'; 
 import requestRoute from './routes/request.route.js';
 import Message from './models/message.model.js';
-import { encrypt } from './lib/encryption.js';
 import cookieParser from "cookie-parser";
 import ml from './middleware/auth.middleware.js';
 const __filename = fileURLToPath(import.meta.url);
@@ -43,12 +42,11 @@ io.on("connection", (socket) => {
     socket.on("sendMessage", async ({ from, to, message, profilePic }) => {
         const payload = { from, to, message, profilePic };
 
-        const encryptedText = encrypt(message);
 
         const newMsg = new Message({
             senderID : from,
             receiverID : to, 
-            text : encryptedText,
+            text : message,
         })
 
         await newMsg.save();
