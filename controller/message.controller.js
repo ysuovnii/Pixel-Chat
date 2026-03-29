@@ -1,16 +1,19 @@
 import Message from '../models/message.model.js';
+import { encrypt, decrypt } from '../lib/encryption.js';
 
 export const sendMessage = async (req, res) => {
     try {
         const { text } = req.body;
         const { id: receiverID } = req.params;
-
         const senderID = req.user._id;
+
+        const {cipherText, iv} = encrypt(text);
 
         const newMessage = new Message({
             senderID,
             receiverID,
-            text,
+            cipherText, 
+            iv
         });
 
         await newMessage.save();
@@ -30,9 +33,6 @@ export const getMessages = async (req, res) => {
         const currentUser = req.user.username;
         const otherUser = req.params.user;
 
-        console.log("Current user:", currentUser);
-        console.log("Other user:", otherUser);
-
         const messages = await Message.find({
             $or: [
                 { senderID: currentUser, receiverID: otherUser },
@@ -40,9 +40,14 @@ export const getMessages = async (req, res) => {
             ]
         }).sort({ createdAt: 1 });
 
-        console.log("Messages found:", messages);
+        const decryptMsg = messages.map(msg => ({
+            senderID : msg.senderID,
+            receiverID : msg.receiverID, 
+            createdAt: msg.createdAt,
+            message : decrypt(msg.cipherText, msg.iv)
+        }))
 
-        res.json(messages);
+        res.json(decryptMsg);
 
     } catch (error) {
         console.error("getMessages error:", error);

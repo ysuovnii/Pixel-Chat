@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema({
         unique: true,
     },
 
+    collegeEmail : {
+        type : String, 
+        // required : true,
+    },
+
     password: {
         type: String,
         minLength: 6,
