@@ -4,6 +4,21 @@ import authController from '../controller/auth.controller.js';
 
 const router = express.Router();
 
+router.get("/", (req, res) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.redirect("/login");
+  }
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    return res.redirect("/home");
+  } catch {
+    return res.redirect("/login");
+  }
+});
+
 router.get('/home', homeController.showHome);
 router.get('/chat/:username', homeController.showChat);
 

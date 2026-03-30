@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 import { encrypt } from './lib/encryption.js';
 const PORT = process.env.PORT;
-const { authVerify } = ml;
+const { authVerify, authPage } = ml;
 
 const app = express();
 const server = http.createServer(app);
@@ -105,7 +105,7 @@ app.use(cookieParser());
 
 // route
 app.use('/', authRoute);
-app.use('/', authVerify, homeRoute);
+app.use('/', authPage, homeRoute);
 app.use('/', authVerify, requestRoute);
 app.use("/message", authVerify, messageRoute);
 

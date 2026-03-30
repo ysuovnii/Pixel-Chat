@@ -33,6 +33,26 @@ const authVerify = async (req, res, next) => {
     }
 };
 
+const authPage = async (req, res, next) => {
+    const token = req.cookies?.UID;
+
+    if (!token) {
+        return res.redirect("/login");
+    }
+
+    try {
+        const decode = jwt.verify(token, process.env.JWT_KEY);
+        const user = await User.findById(decode.id).select("-password");
+        if(!user) {
+            return res.redirect("/login");
+        }
+        req.user = user;
+        next();
+    } catch {
+        return res.redirect("/login");
+    }
+};
+
 const redirectIfLoggedIn = (req, res, next) => {
     try{
         if (req.cookies?.UID) {
@@ -47,5 +67,6 @@ const redirectIfLoggedIn = (req, res, next) => {
 
 export default {
     authVerify,
+    authPage,
     redirectIfLoggedIn, 
 };
