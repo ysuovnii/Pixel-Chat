@@ -58,7 +58,7 @@
         <!-- PARTY LIST -->
         <aside class="home-party float-1">
           <header class="home-party__header">
-            <h2 class="home-party__title">ONLINE PARTY</h2>
+            <h2 class="home-party__title">FRIENDS ROSTER</h2>
             <div class="home-party__count">
               <span id="partyCount">0</span> ONLINE
             </div>
@@ -98,16 +98,16 @@
         const empty = document.getElementById("partyEmpty");
         const count = document.getElementById("partyCount");
 
-        // Only show users who are both online AND in the friends list
-        const onlineFriends = users.filter(
-          (u) => u.username !== currentUser && friendsList.includes(u.username)
-        );
-        count.textContent = onlineFriends.length;
+        // Count online friends
+        const onlineCount = friendsList.filter(f => 
+          users.some(u => u.username === f.username)
+        ).length;
+        count.textContent = onlineCount;
 
-        if (onlineFriends.length === 0) {
+        if (friendsList.length === 0) {
           if (empty) empty.style.display = "block";
           grid.innerHTML = "";
-          empty.innerHTML = `👾 No friends online...<br/>
+          empty.innerHTML = `👾 No friends found...<br/>
             <a href="/search" style="color: var(--color-accent-cyan); font-size: 8px;">
               🔍 Search for new allies
             </a>`;
@@ -117,21 +117,34 @@
 
         grid.innerHTML = "";
 
-        onlineFriends.forEach((u, i) => {
+        // Sort: online first, offline later
+        const sortedFriends = [...friendsList].sort((a, b) => {
+          const aOnline = users.some(u => u.username === a.username);
+          const bOnline = users.some(u => u.username === b.username);
+          if (aOnline && !bOnline) return -1;
+          if (!aOnline && bOnline) return 1;
+          return a.username.localeCompare(b.username);
+        });
+
+        sortedFriends.forEach((u, i) => {
+          const isOnline = users.some(user => user.username === u.username);
           const card = document.createElement("a");
           card.href = `/chat/${encodeURIComponent(u.username)}`;
-          card.className = "home-party-card float-2";
+          card.className = "home-party-card float-2" + (!isOnline ? " offline" : "");
           card.style.animationDelay = `${(i * 0.3).toFixed(1)}s`;
+          if (!isOnline) {
+            card.style.opacity = '0.6';
+          }
           card.innerHTML = `
             <div class="home-party-card__avatar-wrap">
               <img class="home-party-card__avatar"
                 src="${u.profilePic || makeAvatar(u.username)}"
-                alt="" />
-              <span class="home-party-card__status"></span>
+                alt="" style="${!isOnline ? 'filter: grayscale(100%);' : ''}" />
+              <span class="home-party-card__status" style="${!isOnline ? 'background-color: var(--color-text-muted); box-shadow: none;' : ''}"></span>
             </div>
             <div class="home-party-card__info">
               <div class="home-party-card__name">${u.username}</div>
-              <div class="home-party-card__action">▸ OPEN PRIVATE LINK</div>
+              <div class="home-party-card__action" style="${!isOnline ? 'color: var(--color-text-muted);' : ''}">${isOnline ? '▸ OPEN PRIVATE LINK' : 'OFFLINE'}</div>
             </div>
           `;
           grid.appendChild(card);
