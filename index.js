@@ -15,9 +15,9 @@ import ml from './middleware/auth.middleware.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config();
-
+import { encrypt } from './lib/encryption.js';
 const PORT = process.env.PORT;
-const { authVerify } = ml;
+const { authVerify, authPage } = ml;
 
 const app = express();
 const server = http.createServer(app);
@@ -42,10 +42,13 @@ io.on("connection", (socket) => {
     socket.on("sendMessage", async ({ from, to, message, profilePic }) => {
         const payload = { from, to, message, profilePic };
 
+        const {cipherText, iv} = encrypt(message);
+
         const newMsg = new Message({
             senderID : from,
             receiverID : to, 
-            text : message,
+            cipherText,
+            iv
         })
 
         await newMsg.save();
@@ -102,7 +105,7 @@ app.use(cookieParser());
 
 // route
 app.use('/', authRoute);
-app.use('/', authVerify, homeRoute);
+app.use('/', authPage, homeRoute);
 app.use('/', authVerify, requestRoute);
 app.use("/message", authVerify, messageRoute);
 

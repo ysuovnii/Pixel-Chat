@@ -11,9 +11,9 @@ const messageSchema = new mongoose.Schema({
         // ref: "User",
         required : true, 
     }, 
-    text : {
-        type : String, 
-    }
+    cipherText: { type: String, required: true },
+    iv: { type: String, required: true },
+
 }, {timestamps : true});
 
 const Message = mongoose.model('Message', messageSchema);
