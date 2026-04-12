@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP — Pixel Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body class="theme-anti-gravity page--auth">
+    <main class="page-shell">
+        <section class="auth-scroll float-3">
+            <header class="auth-scroll__header">
+                <h1 class="auth-scroll__title">VERIFY EMAIL</h1>
+                <p class="auth-scroll__subtitle">
+                    Enter the OTP sent to your college email.
+                </p>
+                <p style="font-size: 10px; color: var(--color-primary-light); margin-top: 10px;">
+                    <%= email %>
+                </p>
+            </header>
+
+            <% if (typeof message !== 'undefined' && message) { %>
+            <div class="error-box">
+                <%= message %>
+            </div>
+            <% } %>
+
+            <form action="/verify-otp" method="POST">
+                <input type="hidden" name="email" value="<%= email %>" />
+                
+                <div class="auth-form__group">
+                    <label class="auth-form__label">ENTER OTP</label>
+                    <input class="input-field" type="text" name="otp" autocomplete="off"
+                        placeholder="XXXXXX" required maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px;" />
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                    <span class="pixel-icon">▶</span>
+                    <span>VERIFY AND CREATE HERO SLOT</span>
+                </button>
+            </form>
+
+            <div class="auth-scroll__footer">
+                Entered wrong email? <a href="/signup">Return to sign up</a>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

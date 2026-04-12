@@ -1,7 +1,10 @@
 import User from '../models/user.model.js';
+import OTP from '../models/otp.model.js';
 import bcrypt from 'bcrypt';
 import generateToken from '../services/token.service.js';
-import cloudinary from '../config/cloudinary.config.js'
+import cloudinary from '../config/cloudinary.config.js';
+import { generateOTP } from '../utils/otp.util.js';
+import { sendOtpEmail } from '../services/email.service.js';
 
 function showSignup(req, res) {
     return res.render('signupPage', { message: null });
@@ -13,9 +16,9 @@ function showLogin(req, res) {
 
 async function handleSignup(req, res) {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, collegeEmail, password } = req.body;
 
-        if (!username || !email || !password) {
+        if (!username || !email || !collegeEmail || !password) {
             return res.render("signupPage", { message: "All fields are required" });
         }
         if (password.length < 6) {
@@ -28,21 +31,73 @@ async function handleSignup(req, res) {
             return res.render("signupPage", { message: "User already exists" });
         }
 
+        // Generate OTP
+        const otp = generateOTP();
+
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
 
-        const user = new User({
+        // Remove old OTP request for the same email if user is resubmitting
+        await OTP.deleteOne({ collegeEmail });
+
+        const otpRecord = new OTP({
             username,
             email,
+            collegeEmail,
             password: hashPassword,
-        })
-        await user.save();
+            otp
+        });
+        await otpRecord.save();
 
-        return res.redirect('/login');
+        const isEmailSent = await sendOtpEmail(collegeEmail, otp);
+        if (!isEmailSent) {
+            return res.render("signupPage", { message: "Failed to send OTP to the provided college email." });
+        }
 
+        return res.redirect(`/verify-otp?email=${encodeURIComponent(collegeEmail)}`);
     }
     catch (error) {
         console.log("error : ", error.message);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+function showVerifyOtp(req, res) {
+    const email = req.query.email || '';
+    if (!email) {
+        return res.redirect('/signup');
+    }
+    return res.render('verifyOtpPage', { message: null, email });
+}
+
+async function handleVerifyOtp(req, res) {
+    try {
+        const { email, otp } = req.body;
+        
+        if (!email || !otp) {
+            return res.render("verifyOtpPage", { message: "OTP and Email are required", email });
+        }
+
+        const otpRecord = await OTP.findOne({ collegeEmail: email, otp });
+
+        if (!otpRecord) {
+            return res.render("verifyOtpPage", { message: "Invalid or Expired OTP", email });
+        }
+
+        const user = new User({
+            username: otpRecord.username,
+            email: otpRecord.email,
+            collegeEmail: otpRecord.collegeEmail,
+            password: otpRecord.password,
+        });
+
+        await user.save();
+        await OTP.deleteOne({ _id: otpRecord._id });
+
+        generateToken(user, res);
+        return res.redirect('/home');
+    } catch (error) {
+        console.log("verify otp error : ", error.message);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
@@ -114,5 +169,7 @@ export default {
     handleSignup,
     handleLogin,
     handleLogout,
-    updateProfile
+    updateProfile,
+    showVerifyOtp,
+    handleVerifyOtp
 };
