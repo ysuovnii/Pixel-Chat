@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from "url";
 import http from 'http';
 import { Server } from 'socket.io';
-import connectDB from './lib/db.js';
+import connectDB from './config/db.config.js';
 import authRoute from './routes/auth.route.js'
 import homeRoute from './routes/home.route.js';
 import messageRoute from './routes/message.route.js'; 
@@ -15,7 +15,7 @@ import ml from './middleware/auth.middleware.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config();
-import { encrypt } from './lib/encryption.js';
+import { encrypt } from './utils/encryption.js';
 const PORT = process.env.PORT;
 const { authVerify, authPage } = ml;
 

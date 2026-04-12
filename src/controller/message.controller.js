@@ -1,5 +1,5 @@
 import Message from '../models/message.model.js';
-import { encrypt, decrypt } from '../lib/encryption.js';
+import { encrypt, decrypt } from '../utils/encryption.js';
 
 export const sendMessage = async (req, res) => {
     try {

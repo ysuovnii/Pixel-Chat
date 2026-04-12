@@ -1,7 +1,7 @@
 import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
-import generateToken from '../lib/utils.js';
-import cloudinary from '../lib/cloudinary.js';
+import generateToken from '../services/token.service.js';
+import cloudinary from '../config/cloudinary.config.js'
 
 function showSignup(req, res) {
     return res.render('signupPage', { message: null });

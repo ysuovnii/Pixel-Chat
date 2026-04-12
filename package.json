@@ -1,7 +1,7 @@
 {
-  "name": "pixelchat",
+  "name": "ietsphere",
   "version": "1.0.0",
-  "description": "A real-time chat app with a retro pixel art aesthetic.",
+  "description": "IETSphere is a real-time college chat application designed for students of IET DAVV to connect, communicate, and collaborate seamlessly",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./src/index.js",
